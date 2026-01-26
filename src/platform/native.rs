@@ -183,8 +183,28 @@ impl PannerNode {
 pub struct AudioBuffer(Arc<web_audio_api::AudioBuffer>);
 
 impl AudioBuffer {
+    pub fn sample_rate(&self) -> f32 {
+        self.0.sample_rate()
+    }
+
+    pub fn length(&self) -> u64 {
+        self.0.length() as _
+    }
+
     pub fn duration(&self) -> f64 {
         self.0.duration()
+    }
+
+    pub fn number_of_channels(&self) -> u64 {
+        self.0.number_of_channels() as _
+    }
+
+    pub fn copy_from_channel(&self, destination: &mut [f32], channel_number: u32) {
+        self.0.copy_from_channel(destination, channel_number as _);
+    }
+
+    pub fn get_channel_data<'s>(&'s self, channel_number: u32) -> std::borrow::Cow<'s, [f32]> {
+        std::borrow::Cow::Borrowed(self.0.get_channel_data(channel_number as _))
     }
 }
 

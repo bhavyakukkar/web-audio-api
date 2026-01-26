@@ -144,8 +144,28 @@ impl AudioNode for PannerNode {
 pub struct AudioBuffer(platform::AudioBuffer);
 
 impl AudioBuffer {
+    pub fn sample_rate(&self) -> f32 {
+        self.0.sample_rate()
+    }
+
+    pub fn length(&self) -> u64 {
+        self.0.length()
+    }
+
     pub fn duration(&self) -> f64 {
         self.0.duration()
+    }
+
+    pub fn number_of_channels(&self) -> u64 {
+        self.0.number_of_channels()
+    }
+
+    pub fn copy_from_channel(&self, destination: &mut [f32], channel_number: u32) {
+        self.0.copy_from_channel(destination, channel_number);
+    }
+
+    pub fn get_channel_data<'s>(&'s self, channel_number: u32) -> std::borrow::Cow<'s, [f32]> {
+        self.0.get_channel_data(channel_number)
     }
 }
 

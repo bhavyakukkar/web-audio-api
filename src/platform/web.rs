@@ -151,8 +151,47 @@ impl PannerNode {
 pub struct AudioBuffer(web_sys::AudioBuffer);
 
 impl AudioBuffer {
+    pub fn sample_rate(&self) -> f32 {
+        self.0.sample_rate()
+    }
+
+    pub fn length(&self) -> u64 {
+        self.0.length().into()
+    }
+
     pub fn duration(&self) -> f64 {
         self.0.duration()
+    }
+
+    pub fn number_of_channels(&self) -> u64 {
+        self.0.number_of_channels().into()
+    }
+
+    /// # Panics
+    ///
+    /// Panics if the inner call to [`copy_from_channel`][cfc] returns an `Err`, with panic message:
+    /// "copyFromChannel() failed"
+    ///
+    /// [cfc]: web_sys::AudioBuffer::copy_from_channel
+    pub fn copy_from_channel(&self, destination: &mut [f32], channel_number: u32) {
+        self.0
+            .copy_from_channel(destination, channel_number as _)
+            .expect("copyFromChannel() failed")
+    }
+
+    /// # Panics
+    ///
+    /// Panics if the inner call to [`get_channel_data`][gcd] returns an `Err`, with panic message:
+    /// "getChannelData() failed"
+    ///
+    /// [gcd]: web_sys::AudioBuffer::get_channel_data
+    pub fn get_channel_data<'s>(&'s self, channel_number: u32) -> std::borrow::Cow<'s, [f32]> {
+        use std::borrow::Cow;
+        Cow::Owned(
+            self.0
+                .get_channel_data(channel_number)
+                .expect("getChannelData() failed"),
+        )
     }
 }
 
